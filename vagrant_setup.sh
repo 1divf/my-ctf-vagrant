@@ -11,8 +11,6 @@ sudo apt-get -y install foremost
 sudo apt-get -y install libssl-dev
 sudo apt-get -y install xterm
 
-export TERM=xterm
-
 # Install pwntools
 sudo apt-get -y install python2.7 python-pip python-dev git
 sudo pip3 install pwntools
