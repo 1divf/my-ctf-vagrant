@@ -21,22 +21,8 @@ mkdir tools
 cd tools
 
 # Install peda
-git clone https://github.com/longld/peda.git ~/tools/peda
-echo "source ~/tools/peda/peda.py" >> ~/.gdbinit
-
-#git clone https://github.com/zachriggle/pwndbg
-#echo source `pwd`/pwndbg/gdbinit.py >> ~/.gdbinit
-
-# Capstone for pwndbg
-#git clone https://github.com/aquynh/capstone
-#cd capstone
-#git checkout -t origin/next
-#sudo ./make.sh install
-#cd bindings/python
-#sudo python3 setup.py install # Ubuntu 14.04+, GDB uses Python3
-
-# pycparser for pwndbg
-#sudo pip3 install pycparser # Use pip3 for Python3
+git clone git://github.com/Mipu94/peda-heap.git ~/peda-heap
+echo "source ~/peda-heap/peda.py" >> ~/.gdbinit
 
 # Install radare2
 if ! type "r2" > /dev/null; then
