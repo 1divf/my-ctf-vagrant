@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Updates
 sudo apt-get -y update
 sudo apt-get -y upgrade
 
@@ -9,38 +8,23 @@ sudo apt-get -y install tmux
 sudo apt-get -y install gdb gdb-multiarch
 sudo apt-get -y install unzip
 sudo apt-get -y install foremost
+sudo apt-get -y install libssl-dev
+sudo apt-get -y install xterm
 
-# QEMU with MIPS/ARM - http://reverseengineering.stackexchange.com/questions/8829/cross-debugging-for-mips-elf-with-qemu-toolchain
-sudo apt-get -y install qemu qemu-user qemu-user-static
-sudo apt-get -y install 'binfmt*'
-sudo apt-get -y install libc6-armhf-armel-cross
-sudo apt-get -y install debian-keyring
-sudo apt-get -y install debian-archive-keyring
-sudo apt-get -y install emdebian-archive-keyring
-tee /etc/apt/sources.list.d/emdebian.list << EOF
-deb http://mirrors.mit.edu/debian squeeze main
-deb http://www.emdebian.org/debian squeeze main
-EOF
-sudo apt-get -y install libc6-mipsel-cross
-sudo apt-get -y install libc6-arm-cross
-mkdir /etc/qemu-binfmt
-ln -s /usr/mipsel-linux-gnu /etc/qemu-binfmt/mipsel 
-ln -s /usr/arm-linux-gnueabihf /etc/qemu-binfmt/arm
-rm /etc/apt/sources.list.d/emdebian.list
-# sudo apt-get update
+export TERM=xterm
 
 # Install pwntools
 sudo apt-get -y install python2.7 python-pip python-dev git
 sudo pip3 install pwntools
 sudo pip2 install pwntools
 
-cd
+cd /home/vagrant
 mkdir tools
 cd tools
 
-# Install pwndbg
-git clone https://github.com/pwndbg/pwndbg
-./pwndbg/setup.sh
+# Install peda
+git clone https://github.com/longld/peda.git ~/tools/peda
+echo "source ~/tools/peda/peda.py" >> ~/.gdbinit
 
 #git clone https://github.com/zachriggle/pwndbg
 #echo source `pwd`/pwndbg/gdbinit.py >> ~/.gdbinit
@@ -57,58 +41,41 @@ git clone https://github.com/pwndbg/pwndbg
 #sudo pip3 install pycparser # Use pip3 for Python3
 
 # Install radare2
-git clone https://github.com/radare/radare2
-cd radare2
-./sys/install.sh
+if ! type "r2" > /dev/null; then
+    git clone https://github.com/radare/radare2
+    cd radare2
+    ./sys/install.sh
+fi
 
 # Install binwalk
-cd 
-git clone https://github.com/devttys0/binwalk
-cd binwalk
-sudo python setup.py install
-
-# Install Firmware-Mod-Kit
-sudo apt-get -y install git build-essential zlib1g-dev liblzma-dev python-magic
-cd ~/tools
-wget https://firmware-mod-kit.googlecode.com/files/fmk_099.tar.gz
-tar xvf fmk_099.tar.gz
-rm fmk_099.tar.gz
-cd fmk_099/src
-./configure
-make
-
-# Uninstall capstone
-sudo pip2 uninstall capstone -y
-
-# Install correct capstone
-cd ~/tools/capstone/bindings/python
-sudo python setup.py install
-
-# Personal config
-#sudo sudo apt-get -y install stow
-#cd /home/vagrant
-#rm .bashrc
-#git clone https://github.com/thebarbershopper/dotfiles
-#cd dotfiles
-#./install.sh
+if ! type "binwalk" > /dev/null; then
+    sudo pip2 install binwalk
+fi
 
 # My Personal configs
 
 # vim pathogen
-mkdir -p ~/.vim/autoload ~/.vim/bundle && \
-curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
+mkdir -p /home/vagrant/.vim/autoload ~/.vim/bundle && \
+curl -LSso /home/vagrant/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
 
 # youcompleteme
 sudo apt-get -y install build-essential cmake python-dev python3-dev
 
 # For ctf uses, C family and python completer is enough.
-cd ~/.vim/bundle/YouCompleteMe
+mkdir /home/vagrant/.vim/bundle
+cd /home/vagrant/.vim/bundle/
+git clone https://github.com/Valloric/YouCompleteMe.git
+cd /home/vagrant/.vim/bundle/YouCompleteMe
+git submodule update --init --recursive
 ./install.py --clang-completer
+cd ~/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp/ycm
+cp .ycm_extra_conf.py ~/
 
 # configs
-cd ~/
+cd /home/vagrant/
 git clone https://github.com/Escapingbug/my-configs.git
-chmod +x INSTALL_VAGRANT
+cd my-configs
+chmod +x ./INSTALL_VAGRANT
 ./INSTALL_VAGRANT
 cd ../
 rm -rf my-configs
@@ -116,7 +83,9 @@ rm -rf my-configs
 # Install Angr
 cd /home/vagrant
 sudo apt-get -y install python-dev libffi-dev build-essential virtualenvwrapper
-sudo pip install virtualenv
+sudo pip2 install virtualenv
 virtualenv angr
 source angr/bin/activate
-pip install angr --upgrade
+pip2 install angr --upgrade
+
+mkdir ~/ctf
