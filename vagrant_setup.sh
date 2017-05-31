@@ -29,28 +29,32 @@ ln -s /usr/arm-linux-gnueabihf /etc/qemu-binfmt/arm
 rm /etc/apt/sources.list.d/emdebian.list
 # sudo apt-get update
 
-# Install Binjitsu
+# Install pwntools
 sudo apt-get -y install python2.7 python-pip python-dev git
-sudo pip install --upgrade git+https://github.com/binjitsu/binjitsu.git
+sudo pip3 install pwntools
+sudo pip2 install pwntools
 
 cd
 mkdir tools
 cd tools
 
 # Install pwndbg
-git clone https://github.com/zachriggle/pwndbg
-echo source `pwd`/pwndbg/gdbinit.py >> ~/.gdbinit
+git clone https://github.com/pwndbg/pwndbg
+./pwndbg/setup.sh
+
+#git clone https://github.com/zachriggle/pwndbg
+#echo source `pwd`/pwndbg/gdbinit.py >> ~/.gdbinit
 
 # Capstone for pwndbg
-git clone https://github.com/aquynh/capstone
-cd capstone
-git checkout -t origin/next
-sudo ./make.sh install
-cd bindings/python
-sudo python3 setup.py install # Ubuntu 14.04+, GDB uses Python3
+#git clone https://github.com/aquynh/capstone
+#cd capstone
+#git checkout -t origin/next
+#sudo ./make.sh install
+#cd bindings/python
+#sudo python3 setup.py install # Ubuntu 14.04+, GDB uses Python3
 
 # pycparser for pwndbg
-sudo pip3 install pycparser # Use pip3 for Python3
+#sudo pip3 install pycparser # Use pip3 for Python3
 
 # Install radare2
 git clone https://github.com/radare/radare2
@@ -81,12 +85,33 @@ cd ~/tools/capstone/bindings/python
 sudo python setup.py install
 
 # Personal config
-sudo sudo apt-get -y install stow
-cd /home/vagrant
-rm .bashrc
-git clone https://github.com/thebarbershopper/dotfiles
-cd dotfiles
-./install.sh
+#sudo sudo apt-get -y install stow
+#cd /home/vagrant
+#rm .bashrc
+#git clone https://github.com/thebarbershopper/dotfiles
+#cd dotfiles
+#./install.sh
+
+# My Personal configs
+
+# vim pathogen
+mkdir -p ~/.vim/autoload ~/.vim/bundle && \
+curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
+
+# youcompleteme
+sudo apt-get -y install build-essential cmake python-dev python3-dev
+
+# For ctf uses, C family and python completer is enough.
+cd ~/.vim/bundle/YouCompleteMe
+./install.py --clang-completer
+
+# configs
+cd ~/
+git clone https://github.com/Escapingbug/my-configs.git
+chmod +x INSTALL_VAGRANT
+./INSTALL_VAGRANT
+cd ../
+rm -rf my-configs
 
 # Install Angr
 cd /home/vagrant
